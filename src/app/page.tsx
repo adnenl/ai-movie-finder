@@ -1,15 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { searchForMovies } from "@/api/search-for-movies";
 import { MovieList } from "@/components/movie-list";
 import { Movie } from "@/types/movie";
+import { getSelectedMovies } from "@/selected-movies";
 
 export default function Home() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("pokemon");
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [selectedMovies, setSelectedMovies] = useState<Movie[]>(getSelectedMovies());
+
+  useEffect(() => {
+    setSelectedMovies(getSelectedMovies());
+  }
+  , []);
 
   const handleSearch = async () => {
     console.log("handleSearch called"); // Debugging statement
@@ -18,6 +25,16 @@ export default function Home() {
     console.log("Movies found:", data); // Debugging statement
     setMovies(data);
   }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
+  const handleAddMovies= () => {
+    setSelectedMovies(getSelectedMovies());
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen">
@@ -29,10 +46,15 @@ export default function Home() {
           onChange={(e) => { 
             setQuery(e.target.value);
           }}
+          onKeyPress={handleKeyPress}
         />
         <Button onClick={handleSearch} className="ml-2">Search</Button>
       </div>
+      <MovieList movies={selectedMovies} />
+      <Button onClick={handleAddMovies} className="mt-20">Add Movies</Button>
+      <div className="mt-20">
       <MovieList movies={movies} />
+      </div>
     </div>
   );
 }
