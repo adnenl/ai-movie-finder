@@ -7,6 +7,7 @@ import { searchForMovies } from "@/api/search-for-movies";
 import { MovieList } from "@/components/movie-list";
 import { Movie } from "@/types/movie";
 import { getSelectedMovies } from "@/selected-movies";
+import { SelectedMovieList } from "@/components/selected-movie-list";
 
 export default function Home() {
   const [query, setQuery] = useState("pokemon");
@@ -32,9 +33,13 @@ export default function Home() {
     }
   };
 
-  const handleAddMovies= () => {
+  const handleAddMovies = () => {
     setSelectedMovies(getSelectedMovies());
   };
+
+  const handleRemoveMovie = (movieId: number) => {
+    setSelectedMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== movieId));
+  }
 
   return (
     <div className="flex flex-col items-center min-h-screen">
@@ -50,7 +55,7 @@ export default function Home() {
         />
         <Button onClick={handleSearch} className="ml-2">Search</Button>
       </div>
-      <MovieList movies={selectedMovies} />
+      <SelectedMovieList movies={selectedMovies} onRemove={handleRemoveMovie} />
       <Button onClick={handleAddMovies} className="mt-20">Add Movies</Button>
       <div className="mt-20">
       <MovieList movies={movies} />
