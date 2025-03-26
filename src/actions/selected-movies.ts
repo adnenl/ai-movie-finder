@@ -1,4 +1,4 @@
-import { Movie } from "./types/movie";
+import { Movie } from "../types/movie";
 
 export function getSelectedMovies(): Movie[] {
     const selectedMovies = localStorage.getItem('selectedMovies');

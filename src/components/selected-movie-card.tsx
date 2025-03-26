@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { Movie } from '@/types/movie';
 import { X } from 'lucide-react';
 import { Button } from './ui/button';
-import { removeMovieFromSelectedList } from '@/selected-movies';
+import { removeMovieFromSelectedList } from '@/actions/selected-movies';
 export const SelectedMovieCard = ({ movie, onRemove }: { movie: Movie, onRemove: (movieId: number) => void }) => {
 
     const handleRemove = () => {
