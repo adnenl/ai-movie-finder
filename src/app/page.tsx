@@ -9,21 +9,38 @@ import { Movie } from "@/types/movie";
 import { getSelectedMovies } from "@/actions/selected-movies";
 import { SelectedMovieList } from "@/components/selected-movie-list";
 import { findRecommendedMovie } from "./api/find-recommended-movie";
+import { get } from "http";
+import { getPopularMovies } from "./api/get-popular-movies";
 
 const getMovieNames = (movies: Movie[]): string[] => {
   return movies.map(movie=> movie.title);
   }
 
 export default function Home() {
-  const [query, setQuery] = useState("pokemon");
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState<Movie[]>([]);
   const [selectedMovies, setSelectedMovies] = useState<Movie[]>(getSelectedMovies());
   const [recommendations, setRecommendations] = useState<Movie[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    loadPopularMovies();
     setSelectedMovies(getSelectedMovies());
   }
   , []);
+
+  // Function to load initial movies
+  const loadPopularMovies = async () => {
+    setIsLoading(true);
+    try {
+      const popularMovies = await getPopularMovies();
+      setMovies(popularMovies);
+    } catch (error) {
+      console.error("Failed to load initial movies:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSearch = async () => {
     console.log("handleSearch called"); // Debugging statement
@@ -45,6 +62,7 @@ export default function Home() {
 
   const handleRemoveMovie = (movieId: number) => {
     setSelectedMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== movieId));
+    console.log("Selected movies:", selectedMovies); // Debugging statement
   }
 
   const handleSendQuery = async () => {
@@ -105,7 +123,8 @@ export default function Home() {
       <Button onClick={handleSendQuery} className="mt-20">Find Similar Movies</Button>
       <Button onClick={handleAddMovies} className="mt-20">Add Movies</Button>
       <div className="mt-20">
-      <MovieList movies={movies} />
+        {isLoading && <p>Loading...</p>}
+        {!isLoading && <MovieList movies={movies} />}
       </div>
     </div>
   );
