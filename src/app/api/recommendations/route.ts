@@ -9,13 +9,15 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: "mistral",
-        prompt: `You are a helpful movie recommendation assistant. Based on the following movies: ${movieNames.join(", ")}, suggest 5 similar movies.
+        prompt: `You are a helpful movie recommendation assistant. Based on the following movies: ${movieNames.join(", ")}, suggest 4 similar movies.
 
 CRITICAL INSTRUCTION: Your entire response must be ONLY movie titles separated by commas WITHOUT ANY NUMBERING.
 Example of correct format: "The Matrix, Inception, Interstellar, Blade Runner, The Fifth Element"
 Example of INCORRECT format: "1. The Matrix 2. Inception 3. Interstellar"
 
-Return ONLY the movie titles with commas between them. No explanations, no numbers, no bullets.`,
+Return ONLY the movie titles with commas between them. No explanations, no numbers, no bullets.
+
+DO NOT include the movies provided in the prompt in your response.`,
         stream: false
       }),
     });
