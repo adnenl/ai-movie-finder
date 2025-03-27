@@ -6,11 +6,10 @@ import { Input } from "@/components/ui/input";
 import { searchForMovies } from "@/app/api/search-for-movies";
 import { MovieList } from "@/components/movie-list";
 import { Movie } from "@/types/movie";
-import { getSelectedMovies } from "@/actions/selected-movies";
 import { SelectedMovieList } from "@/components/selected-movie-list";
 import { findRecommendedMovie } from "./api/find-recommended-movie";
-import { get } from "http";
 import { getPopularMovies } from "./api/get-popular-movies";
+import { useMovieContext } from "@/context/MovieContext";
 
 const getMovieNames = (movies: Movie[]): string[] => {
   return movies.map(movie=> movie.title);
@@ -19,15 +18,17 @@ const getMovieNames = (movies: Movie[]): string[] => {
 export default function Home() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [selectedMovies, setSelectedMovies] = useState<Movie[]>(getSelectedMovies());
   const [recommendations, setRecommendations] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { selectedMovies, setSelectedMovies, isClientReady } = useMovieContext();
+
   useEffect(() => {
-    loadPopularMovies();
-    setSelectedMovies(getSelectedMovies());
-  }
-  , []);
+    if (isClientReady) {
+      loadPopularMovies();
+    }
+  }, [isClientReady]);
+  
 
   // Function to load initial movies
   const loadPopularMovies = async () => {
@@ -43,6 +44,12 @@ export default function Home() {
   };
 
   const handleSearch = async () => {
+    setSelectedMovies([]);
+    if (query === "") {
+      loadPopularMovies();  
+      return;
+    }
+
     console.log("handleSearch called"); // Debugging statement
     console.log("Query:", query); // Debugging statement
     const data = await searchForMovies(query);
@@ -56,13 +63,9 @@ export default function Home() {
     }
   };
 
-  const handleAddMovies = () => {
-    setSelectedMovies(getSelectedMovies());
-  };
 
   const handleRemoveMovie = (movieId: number) => {
-    setSelectedMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== movieId));
-    console.log("Selected movies:", selectedMovies); // Debugging statement
+    setSelectedMovies(prevMovies => prevMovies.filter(movie => movie.id !== movieId));
   }
 
   const handleSendQuery = async () => {
@@ -81,12 +84,16 @@ export default function Home() {
       }
   
       const data = await res.json();
+      setRecommendations([]);
+
       const recommendationString = data.response as string;
       const recommendationArray = recommendationString
         .split(',')
         .map(title => title.trim())
         .filter(title => title.length > 0);
+
       console.log("Recommendations:", recommendationArray); // Debugging statement
+
       for (const title of recommendationArray) {
         const movie = await findRecommendedMovie(title);
         if (movie) {
@@ -116,15 +123,29 @@ export default function Home() {
         />
         <Button onClick={handleSearch} className="ml-2">Search</Button>
       </div>
-      {recommendations && (
-        <MovieList movies={recommendations} />
-)}
-      <SelectedMovieList movies={selectedMovies} onRemove={handleRemoveMovie} />
-      <Button onClick={handleSendQuery} className="mt-20">Find Similar Movies</Button>
-      <Button onClick={handleAddMovies} className="mt-20">Add Movies</Button>
-      <div className="mt-20">
-        {isLoading && <p>Loading...</p>}
-        {!isLoading && <MovieList movies={movies} />}
+
+      {isClientReady && (
+        <>
+          {recommendations.length > 0 && (
+            <div className="mt-4 w-full max-w-2xl">
+              <h2 className="text-xl font-bold mb-2">Recommended Movies</h2>
+              <MovieList movies={recommendations} />
+            </div>
+          )}
+          
+          <div className="mt-4 w-full max-w-2xl">
+            <h2 className="text-xl font-bold mb-2">Your Selected Movies</h2>
+            <SelectedMovieList movies={selectedMovies} onRemove={handleRemoveMovie} />
+            
+            {selectedMovies.length > 0 && (
+              <Button onClick={handleSendQuery} className="mt-4">Find Similar Movies</Button>
+            )}
+          </div>
+        </>
+      )}
+      <div className="mt-8 w-full max-w-2xl">
+        <h2 className="text-xl font-bold mb-2">Browse Movies</h2>
+        {isLoading ? <p>Loading...</p> : <MovieList movies={movies} />}
       </div>
     </div>
   );

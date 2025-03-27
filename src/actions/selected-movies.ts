@@ -1,8 +1,12 @@
 import { Movie } from "../types/movie";
 
 export function getSelectedMovies(): Movie[] {
+  if (typeof window !== 'undefined') {
     const selectedMovies = localStorage.getItem('selectedMovies');
     return selectedMovies ? JSON.parse(selectedMovies) : [];
+  }
+
+  return [];
   }
 
 export function addMovieToSelectedList(movie: Movie) {

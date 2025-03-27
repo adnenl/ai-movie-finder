@@ -1,28 +1,28 @@
 import Image from 'next/image';
 import { Movie } from '@/types/movie';
 import { useEffect, useState } from 'react';
-import { addMovieToSelectedList, getSelectedMovies, removeMovieFromSelectedList } from '@/actions/selected-movies';
+import { useMovieContext } from '@/context/MovieContext';
 
 export const MovieCard = ({ movie }: { movie: Movie }) => {
   const [selected, setSelected] = useState(false);
+  const { selectedMovies, setSelectedMovies, isClientReady } = useMovieContext();
 
   useEffect(() => {
-    const selectedMovies = getSelectedMovies();
-    const isSelected = selectedMovies.some((selectedMovie) => selectedMovie.id === movie.id)
-    setSelected(isSelected);
-  }, [movie.id])
+    if (isClientReady) {
+      const isSelected = selectedMovies.some((selectedMovie) => selectedMovie.id === movie.id);
+      setSelected(isSelected);
+    }
+  }, [movie.id, selectedMovies, isClientReady]);
 
   const handleClick = () => {
-    setSelected(!selected);
     if (!selected) {
-      addMovieToSelectedList(movie);
-      console.log(localStorage.getItem('selectedMovies'));
+      setSelectedMovies([...selectedMovies, movie]);
       
     }
     else {
-      removeMovieFromSelectedList(movie.id);
-        console.log(localStorage.getItem('selectedMovies'));
+      setSelectedMovies(selectedMovies.filter(m => m.id !== movie.id));
     }
+    setSelected(!selected);
   };
 
   return (
