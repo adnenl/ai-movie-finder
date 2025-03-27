@@ -14,7 +14,7 @@ export const SelectedMovieCard = ({ movie, onRemove }: { movie: Movie, onRemove:
     <div
       className='relative m-4 p-2 flex flex-col items-center'
     >
-    <Button className='absolute top-2 right-2 p-1 bg-red-600 text-white rounded-full'
+    <Button className='absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full'
             onClick={handleRemove}
     >
         <X/></Button>
