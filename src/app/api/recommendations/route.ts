@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   
   try {
     // Call Cloudflare AI Worker endpoint
-    const response = await fetch('https://movie-finder.workers.dev', {
+    const response = await fetch('https://cloudflare.movie-finder.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ movieNames }),
