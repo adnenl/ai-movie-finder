@@ -49,11 +49,8 @@ export default function Home() {
       loadPopularMovies();
       return;
     }
-
-    console.log("handleSearch called"); // Debugging statement
-    console.log("Query:", query); // Debugging statement
     const data = await searchForMovies(query);
-    console.log("Movies found:", data); // Debugging statement
+    
     setMovies(data);
   }
 
@@ -95,14 +92,11 @@ export default function Home() {
         .map(title => title.trim())
         .filter(title => title.length > 0);
 
-      console.log("Recommendations:", recommendationArray);
-
       const newRecommendations: Movie[] = [];
 
       for (const title of recommendationArray) {
         const movie = await findRecommendedMovie(title);
         if (movie && !newRecommendations.some(m => m.id === movie.id) && !selectedMovies.some(m => m.id === movie.id)) {
-          console.log("Found recommended movie:", movie);
           newRecommendations.push(movie);
         }
       }
