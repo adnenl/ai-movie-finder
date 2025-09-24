@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Movie Finder
+
+AI Movie Finder is an interactive web application that helps you discover movies based on your preferences. The app uses AI to recommend similar movies based on your selections.
+
+## Features
+
+- **Movie Search**: Search for movies by title
+- **Popular Movies**: Browse a curated list of popular films
+- **AI-Powered Recommendations**: Select movies you enjoy to get personalized recommendations
+- **Watchlist**: Save movies to your watchlist for future viewing
+- **Responsive Design**: Enjoy a seamless experience across desktop and mobile devices
+
+## Technology Stack
+
+- **Frontend**: Next.js, React, TypeScript, Tailwind CSS
+- **AI**: Cloudflare Workers AI with Llama 3.1 for generating recommendations
+- **APIs**: TMDB (The Movie Database) API for movie data
+- **State Management**: React Context API with localStorage persistence
+
+## How It Works
+
+1. Search for movies or browse from the popular selection
+2. Click on movies you like to select them
+3. Click "Find Similar Movies" to get AI-generated recommendations
+4. Add movies to your watchlist by clicking the eye icon
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Clone the repository
+git clone https://github.com/adnenl/ai-movie-finder.git
+
+# Install dependencies
+cd ai-movie-finder
+npm install
+# Or if using pnpm
+pnpm install
+
+# Set up environment variables
+# Create a .env.local file with your TMDB API key:
+# NEXT_PUBLIC_API_KEY=your_tmdb_api_key_here
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
+# Or with pnpm
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit [http://localhost:3000](http://localhost:3000) to see the app in action.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The frontend is deployed on Vercel, while the recommendation engine runs on Cloudflare Workers. See the `cloudflare` directory for worker code.
 
-## Learn More
+### Cloudflare Worker Setup
 
-To learn more about Next.js, take a look at the following resources:
+The project uses Cloudflare Workers for AI-powered recommendations:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Navigate to the cloudflare directory
+2. Deploy the worker with `npx wrangler deploy`
+3. Update the worker URL in your frontend API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+ai-movie-finder/
+├── src/
+│   ├── actions/       # Server actions
+│   ├── app/           # Next.js App Router
+│   │   ├── api/       # API routes
+│   │   └── watchlist/ # Watchlist page
+│   ├── components/    # UI components
+│   ├── context/       # React context providers
+│   ├── hooks/         # Custom React hooks
+│   └── types/         # TypeScript type definitions
+└── cloudflare/        # Cloudflare Worker code
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Note
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project uses client-side localStorage to persist your selected movies and watchlist between sessions.
+
+## License
+
+MIT
